@@ -1,6 +1,8 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
+import type { Metadata } from "next"
+import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
+import { AppShell } from "@/components/layout/app-shell"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 
@@ -10,7 +12,11 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
-// header
+
+export const metadata: Metadata = {
+  title: "Elastic Search UI",
+  description: "Frontend boilerplate for Elasticsearch practice",
+}
 
 export default function RootLayout({
   children,
@@ -21,15 +27,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        fontMono.variable,
-        "font-sans",
-        inter.variable
-      )}
+      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   )
