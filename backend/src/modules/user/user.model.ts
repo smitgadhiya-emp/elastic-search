@@ -11,7 +11,7 @@ const userSchema = new Schema<IUser>(
       lowercase: true,
       trim: true,
     },
-    phone: { type: String, trim: true },
+    phone: { type: Number, trim: true },
     state: { type: String, trim: true },
     city: { type: String, trim: true },
     bio: { type: String, trim: true },

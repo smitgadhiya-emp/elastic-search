@@ -1,6 +1,8 @@
 import type { FilterQuery } from 'mongoose';
 import type { IUser } from './user.interface';
 import { User } from './user.model';
+import { client } from '../../elastic';
+import { userIndex } from '../../elastic/user/user.mapping';
 
 export type CreateUserProfileInput = {
   name: string;
@@ -41,7 +43,7 @@ export async function createUserProfile(
   data: CreateUserProfileInput
 ): Promise<IUser> {
   try {
-    const doc = await User.create({
+    const createdUser = await User.create({
       name: data.name,
       email: data.email,
       ...omitEmptyStrings({
@@ -52,7 +54,18 @@ export async function createUserProfile(
         avatar: data.avatar,
       }),
     });
-    return doc;
+
+    // index the user in elasticsearch
+
+    const { _id, ...restData } = createdUser.toObject();
+
+    await client.index({
+      index: userIndex,
+      id: _id.toString(),
+      document: restData,
+    });
+
+    return createdUser;
   } catch (error) {
     rethrow(error);
   }

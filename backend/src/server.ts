@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { createApp } from './app';
 import { connectDatabase, disconnectDatabase } from './config/database';
 import { env } from './config/env';
+import { initializeElasticsearch } from './elastic';
 
 async function bootstrap() {
   process.env.NODE_ENV = env.NODE_ENV;
@@ -12,6 +13,8 @@ async function bootstrap() {
   const server = app.listen(env.PORT, () => {
     console.log(`Server listening on port ${env.PORT}`);
   });
+
+  await initializeElasticsearch();
 
   const shutdown = async (signal: string) => {
     console.log(`${signal} received, shutting down`);

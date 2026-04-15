@@ -4,7 +4,7 @@ export interface IUser {
   _id: Types.ObjectId;
   name: string;
   email: string;
-  phone?: string;
+  phone?: number;
   state?: string;
   city?: string;
   bio?: string;
