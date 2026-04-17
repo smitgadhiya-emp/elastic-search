@@ -1,22 +1,15 @@
-import type { Request, Response, NextFunction } from 'express';
-import { errorResponse, successResponse } from '../../common/response';
-import * as userService from './user.service';
+import type { Request, Response, NextFunction } from "express";
+import { errorResponse, successResponse } from "../../common/response";
+import * as userService from "./user.service";
 
 export async function createUserProfile(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
-    const {
-      name,
-      email,
-      phone,
-      state,
-      city,
-      bio,
-      avatar,
-    } = req.body as userService.CreateUserProfileInput;
+    const { name, email, phone, state, city, bio, avatar } =
+      req.body as userService.CreateUserProfileInput;
     const profile = await userService.createUserProfile({
       name,
       email,
@@ -35,10 +28,11 @@ export async function createUserProfile(
 export async function getUserProfiles(
   _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
-    const profiles = await userService.getUserProfiles();
+    const filter = _req.query;
+    const profiles = await userService.getUserProfiles(filter);
     successResponse(res, { data: profiles });
   } catch (err) {
     next(err);
@@ -48,7 +42,7 @@ export async function getUserProfiles(
 export async function getUserProfileById(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
@@ -56,7 +50,7 @@ export async function getUserProfileById(
     if (!profile) {
       errorResponse(res, {
         statusCode: 404,
-        message: 'User profile not found',
+        message: "User profile not found",
       });
       return;
     }
@@ -69,7 +63,7 @@ export async function getUserProfileById(
 export async function updateUserProfile(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
@@ -78,7 +72,7 @@ export async function updateUserProfile(
     if (!profile) {
       errorResponse(res, {
         statusCode: 404,
-        message: 'User profile not found',
+        message: "User profile not found",
       });
       return;
     }
@@ -91,7 +85,7 @@ export async function updateUserProfile(
 export async function deleteUserProfile(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
@@ -99,11 +93,14 @@ export async function deleteUserProfile(
     if (!deleted) {
       errorResponse(res, {
         statusCode: 404,
-        message: 'User profile not found',
+        message: "User profile not found",
       });
       return;
     }
-    successResponse(res, { statusCode: 204 });
+    successResponse(res, {
+      statusCode: 204,
+      message: "User profile deleted successfully",
+    });
   } catch (err) {
     next(err);
   }
