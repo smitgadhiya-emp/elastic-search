@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { errorResponse, successResponse } from "../../common/response";
 import * as userService from "./user.service";
+import { publishMessage } from "../../config/kafka";
 
 export async function createUserProfile(
   req: Request,
@@ -19,6 +20,7 @@ export async function createUserProfile(
       bio,
       avatar,
     });
+
     successResponse(res, { statusCode: 201, data: profile });
   } catch (err) {
     next(err);
@@ -101,6 +103,16 @@ export async function deleteUserProfile(
       statusCode: 204,
       message: "User profile deleted successfully",
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+
+export const testKafka = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    await publishMessage("test-kafka", "Hello Kafka");
+    successResponse(res, { message: "Message published to Kafka" });
   } catch (err) {
     next(err);
   }

@@ -3,6 +3,7 @@ import { createApp } from './app';
 import { connectDatabase, disconnectDatabase } from './config/database';
 import { env } from './config/env';
 import { initializeElasticsearch } from './elastic';
+import { kafkaConsumerRun, kafkaProducerRun } from './config/kafka';
 
 async function bootstrap() {
   process.env.NODE_ENV = env.NODE_ENV;
@@ -14,7 +15,12 @@ async function bootstrap() {
     console.log(`Server listening on port ${env.PORT}`);
   });
 
+  // Initialize Elasticsearch
   await initializeElasticsearch();
+
+  // Initialize Kafka Producer
+  await kafkaProducerRun();
+
 
   const shutdown = async (signal: string) => {
     console.log(`${signal} received, shutting down`);
@@ -28,7 +34,9 @@ async function bootstrap() {
   process.on('SIGTERM', () => void shutdown('SIGTERM'));
 }
 
-bootstrap().catch((err) => {
+bootstrap().then(() => {
+  kafkaConsumerRun()
+}).catch((err) => {
   console.error('Failed to start server:', err);
   process.exit(1);
 });

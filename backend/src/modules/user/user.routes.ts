@@ -9,4 +9,7 @@ router.get('/:id', userController.getUserProfileById);
 router.put('/:id', userController.updateUserProfile);
 router.delete('/:id', userController.deleteUserProfile);
 
+// temporary route to test kafka
+router.get('/kafka/test', userController.testKafka);
+
 export { router as userRoutes };

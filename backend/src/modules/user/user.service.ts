@@ -4,6 +4,7 @@ import type { IUser } from "./user.interface";
 import { User } from "./user.model";
 import { client } from "../../elastic";
 import { userIndex } from "../../elastic/user/user.mapping";
+import { publishMessage } from "../../config/kafka";
 
 export type CreateUserProfileInput = {
   name: string;
@@ -138,6 +139,10 @@ export async function createUserProfile(
       id: _id.toString(),
       document: restData,
     });
+
+    // publish the user created event to kafka
+    publishMessage("user-created", JSON.stringify(restData));
+    publishMessage("user-create-send-notification", JSON.stringify(restData));
 
     return createdUser;
   } catch (error) {
